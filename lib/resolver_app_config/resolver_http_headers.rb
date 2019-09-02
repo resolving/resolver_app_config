@@ -4,11 +4,22 @@ module ResolverHTTPHeaders
   # As per https://guides.rubyonrails.org/v5.0/security.html#default-headers,
   # X-Frame-Options, X-XSS-Protection and X-Content-Type-Options are already
   # set to secure values by default for all Rails 4 and 5 application.
+  # However, since we are setting some extra default headers here, we also
+  # need to reiterate these ones.
   #
   # Strict-Transport-Security - this header sets options for HSTS
   # (HTTP strict transport security). This is currently set to a short
   # time (30 seconds) and specifically excludes all subdomains and browser
   # preloading for testing purposes.
+  #
+  # X-Content-Type-Options - this header opts the site out of automatic
+  # MIME type sniffing, specifically in Internet Explorer.
+  #
+  # X-Frame-Options - this header restricts framing of this site to other
+  # pages in the same origin (i.e. domain).
+  #
+  # X-XSS-Protection - this header stops a page from loading if an XSS
+  # attack is detected by the browser.
   #
   # Headers that could be added to this list:
   #
@@ -18,7 +29,10 @@ module ResolverHTTPHeaders
   # * Expect-CT
   def self.configure
     Rails.application.config.action_dispatch.default_headers = {
-      'Strict-Transport-Security' => 'max-age=30'
+      'Strict-Transport-Security' => 'max-age=30',
+      'X-Content-Type-Options' => 'nosniff',
+      'X-Frame-Options' => 'SAMEORIGIN',
+      'X-XSS-Protection' => '1; mode=block',
     }
   end
 end
