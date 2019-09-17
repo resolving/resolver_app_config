@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rails', '~> 5'
   spec.add_development_dependency 'rake', '~> 12.3'
   spec.add_development_dependency 'rspec', '~> 3.8.0'
+  spec.add_development_dependency 'simplecov', '~> 0.17'
 end
