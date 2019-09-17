@@ -98,3 +98,10 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
+
+if ENV['COVERAGE'] == 'true'
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter '/spec/'
+  end
+end
