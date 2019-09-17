@@ -18,16 +18,7 @@ jobs:
             wget -O ~/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
             chmod +x ~/cc-test-reporter
             ~/cc-test-reporter before-build
-      - restore_cache:
-          keys:
-            - gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-            - gem-cache-v2-{{ arch }}-{{ .Branch }}
-            - gem-cache-v2
       - run: bundle install --jobs=4 --path vendor/bundle
-      - save_cache:
-          key: gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
       - run: COVERAGE=true bundle exec rspec
       - run:
           name: Report test code coverage to Code Climate
