@@ -1,0 +1,36 @@
+version: 2.1
+workflows:
+  build_deploy:
+    jobs:
+      - build
+jobs:
+  build:
+    working_directory: ~/resolver_app_config
+    docker:
+      - image: circleci/ruby:2.6.3
+        environment:
+          CC_TEST_REPORTER_ID: 884e622481fa9b39c61483d55ace544dc9a02d9ef5e44d73a0d501c19d6b6c28
+    steps:
+      - checkout
+      - run:
+          name: Install and start Code Climate test reporter
+          command: |
+            wget -O ~/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+            chmod +x ~/cc-test-reporter
+            ~/cc-test-reporter before-build
+      - restore_cache:
+          keys:
+            - gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - gem-cache-v2-{{ arch }}-{{ .Branch }}
+            - gem-cache-v2
+      - run: bundle install --jobs=4 --path vendor/bundle
+      - save_cache:
+          key: gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: COVERAGE=true bundle exec rspec
+      - run:
+          name: Report test code coverage to Code Climate
+          command: |
+            ~/cc-test-reporter format-coverage -t simplecov -o coverage/codeclimate.json coverage/.resultset.json
+            ~/cc-test-reporter upload-coverage
