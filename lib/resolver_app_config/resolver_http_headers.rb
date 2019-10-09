@@ -8,9 +8,9 @@ module ResolverHTTPHeaders
   # need to reiterate these ones.
   #
   # Strict-Transport-Security - this header sets options for HSTS
-  # (HTTP strict transport security). This is currently set to a short
-  # time (30 seconds) and specifically excludes all subdomains and browser
-  # preloading for testing purposes.
+  # (HTTP strict transport security). This is currently set to 1 year
+  # with preloading enabled. Subdomains are disabled since they are under
+  # the control of various teams.
   #
   # X-Content-Type-Options - this header opts the site out of automatic
   # MIME type sniffing, specifically in Internet Explorer.
@@ -29,7 +29,7 @@ module ResolverHTTPHeaders
   # * Expect-CT
   def self.configure
     Rails.application.config.action_dispatch.default_headers = {
-      'Strict-Transport-Security' => 'max-age=30',
+      'Strict-Transport-Security' => 'max-age=31536000; preload',
       'X-Content-Type-Options' => 'nosniff',
       'X-Frame-Options' => 'SAMEORIGIN',
       'X-XSS-Protection' => '1; mode=block',
